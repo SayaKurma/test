@@ -27,6 +27,7 @@
         }
     </script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
     <style>
         input[type="date"]::-webkit-calendar-picker-indicator {
             cursor: pointer;
@@ -74,7 +75,7 @@
                             class="w-full bg-transparent text-2xl sm:text-3xl font-bold py-2 border-b-2 border-zinc-300 dark:border-zinc-700 focus:border-brand-600 dark:focus:border-brand-500 outline-none transition-colors text-zinc-900 dark:text-white cursor-pointer">
                     </div>
 
-                    <div id="errorBox" class="hidden flex items-center gap-2 text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-900/10 p-4 rounded-lg text-sm font-medium">
+                    <div id="errorBox" class="hidden flex items-center gap-2 text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-900/10 p-4 rounded-lg text-sm font-medium" role="alert" aria-live="polite">
                         <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
                         <span id="errorMessage">Pesan error</span>
                     </div>
@@ -112,6 +113,7 @@
                             <span id="resDays">0</span><span class="text-xl font-medium text-zinc-400 ml-1">hri</span>
                         </div>
                     </div>
+                    <div id="birthExtraInfo" class="flex flex-wrap gap-3 mt-4 text-base font-medium text-zinc-600 dark:text-zinc-400"></div>
                 </div>
 
                 <hr class="border-zinc-200 dark:border-zinc-800 fade-in" style="animation-delay: 0.2s;">
@@ -134,6 +136,38 @@
                         <p class="text-3xl font-bold font-mono"><span id="totalHours">0</span></p>
                     </div>
 
+                    <div class="bg-white dark:bg-zinc-950 p-6 rounded-2xl border border-zinc-100 dark:border-zinc-800 shadow-sm">
+                        <div class="flex items-center gap-3 mb-3 text-zinc-500 dark:text-zinc-400">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path></svg>
+                            <h3 class="font-medium text-sm">Total Minggu</h3>
+                        </div>
+                        <p class="text-3xl font-bold font-mono"><span id="totalWeeks">0</span></p>
+                    </div>
+
+                    <div class="bg-white dark:bg-zinc-950 p-6 rounded-2xl border border-zinc-100 dark:border-zinc-800 shadow-sm">
+                        <div class="flex items-center gap-3 mb-3 text-zinc-500 dark:text-zinc-400">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                            <h3 class="font-medium text-sm">Total Menit</h3>
+                        </div>
+                        <p class="text-3xl font-bold font-mono"><span id="totalMinutes">0</span></p>
+                    </div>
+
+                    <div class="bg-white dark:bg-zinc-950 p-6 rounded-2xl border border-zinc-100 dark:border-zinc-800 shadow-sm">
+                        <div class="flex items-center gap-3 mb-3 text-zinc-500 dark:text-zinc-400">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                            <h3 class="font-medium text-sm">Total Detik</h3>
+                        </div>
+                        <p class="text-3xl font-bold font-mono"><span id="totalSeconds">0</span></p>
+                    </div>
+
+                    <div class="bg-white dark:bg-zinc-950 p-6 rounded-2xl border border-zinc-100 dark:border-zinc-800 shadow-sm">
+                        <div class="flex items-center gap-3 mb-3 text-zinc-500 dark:text-zinc-400">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 15.546c-.523 0-1.046.151-1.5.454a2.704 2.704 0 01-3 0 2.704 2.704 0 00-3 0 2.704 2.704 0 01-3 0 2.704 2.704 0 00-3 0 2.704 2.704 0 01-3 0 2.701 2.701 0 00-1.5-.454M9 6v2m3-2v2m3-2v2M9 3h.01M12 3h.01M15 3h.01M21 21v-7a2 2 0 00-2-2H5a2 2 0 00-2 2v7h18zm-3-9v-2a2 2 0 00-2-2H8a2 2 0 00-2 2v2h12z"></path></svg>
+                            <h3 class="font-medium text-sm">Milestone 30thn</h3>
+                        </div>
+                        <p class="text-lg font-bold font-mono"><span id="milestoneDays">0</span> hari lagi</p>
+                    </div>
+
                     <div class="bg-brand-50 dark:bg-brand-900/10 p-6 rounded-2xl border border-brand-100 dark:border-brand-900/30 sm:col-span-2 relative overflow-hidden group">
                         <div class="absolute -right-6 -top-6 w-32 h-32 bg-brand-100 dark:bg-brand-900/20 rounded-full blur-2xl group-hover:scale-150 transition-transform duration-700"></div>
                         
@@ -148,13 +182,30 @@
                                 </p>
                             </div>
                             
-                            <button id="btnShare" class="shrink-0 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-700 hover:border-brand-500 hover:text-brand-600 dark:hover:text-brand-400 px-5 py-2.5 rounded-lg text-sm font-medium transition-colors flex items-center gap-2 shadow-sm">
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3"></path></svg>
-                                Salin Ringkasan
-                            </button>
+                            <div class="flex gap-2">
+                                <button id="btnShare" class="shrink-0 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-700 hover:border-brand-500 hover:text-brand-600 dark:hover:text-brand-400 px-5 py-2.5 rounded-lg text-sm font-medium transition-colors flex items-center gap-2 shadow-sm">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3"></path></svg>
+                                    Salin
+                                </button>
+                                <button id="btnDownload" class="shrink-0 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-700 hover:border-brand-500 hover:text-brand-600 dark:hover:text-brand-400 px-5 py-2.5 rounded-lg text-sm font-medium transition-colors flex items-center gap-2 shadow-sm">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2M16 12l-4 4-4-4m4-8v12"></path></svg>
+                                    Unduh
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </div>
+
+                <div class="fade-in bg-white dark:bg-zinc-950 p-6 rounded-2xl border border-zinc-100 dark:border-zinc-800" style="animation-delay: 0.4s;">
+                    <div class="flex justify-between items-center mb-2">
+                        <span class="text-sm font-medium text-zinc-500 dark:text-zinc-400">Life Progress (estimasi 80 tahun)</span>
+                        <span id="lifePercent" class="text-sm font-bold text-brand-600 dark:text-brand-400">0%</span>
+                    </div>
+                    <div class="h-3 bg-zinc-200 dark:bg-zinc-800 rounded-full overflow-hidden">
+                        <div id="lifeBar" class="h-full bg-brand-500 rounded-full transition-all duration-1000" style="width: 0%;"></div>
+                    </div>
+                </div>
+
             </div>
 
             <div id="toast" class="absolute bottom-8 left-1/2 transform -translate-x-1/2 bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-900 px-6 py-3 rounded-lg shadow-xl opacity-0 transition-all duration-300 translate-y-4 pointer-events-none text-sm font-semibold flex items-center gap-2 z-50">
@@ -166,7 +217,9 @@
     </div>
 
     <script>
-        document.getElementById('year').innerText = new Date().getFullYear();
+        const days = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
+        const yearSpan = document.getElementById('year');
+        yearSpan.innerText = new Date().getFullYear();
 
         const themeToggleBtn = document.getElementById('themeToggle');
         const html = document.documentElement;
@@ -196,6 +249,116 @@
         const currentYear = new Date().getFullYear();
         birthInput.setAttribute('min', `${currentYear-150}-01-01`);
 
+        const savedBirthdate = localStorage.getItem('userBirthdate');
+        if (savedBirthdate) {
+            birthInput.value = savedBirthdate;
+        }
+
+        function getZodiac(month, day) {
+            if ((month == 1 && day >= 20) || (month == 2 && day <= 18)) return "Aquarius";
+            if ((month == 2 && day >= 19) || (month == 3 && day <= 20)) return "Pisces";
+            if ((month == 3 && day >= 21) || (month == 4 && day <= 19)) return "Aries";
+            if ((month == 4 && day >= 20) || (month == 5 && day <= 20)) return "Taurus";
+            if ((month == 5 && day >= 21) || (month == 6 && day <= 20)) return "Gemini";
+            if ((month == 6 && day >= 21) || (month == 7 && day <= 22)) return "Cancer";
+            if ((month == 7 && day >= 23) || (month == 8 && day <= 22)) return "Leo";
+            if ((month == 8 && day >= 23) || (month == 9 && day <= 22)) return "Virgo";
+            if ((month == 9 && day >= 23) || (month == 10 && day <= 22)) return "Libra";
+            if ((month == 10 && day >= 23) || (month == 11 && day <= 21)) return "Scorpio";
+            if ((month == 11 && day >= 22) || (month == 12 && day <= 21)) return "Sagittarius";
+            return "Capricorn";
+        }
+
+        function calculateAge(birthDate, today = new Date()) {
+            today.setHours(0, 0, 0, 0);
+            birthDate.setHours(0, 0, 0, 0);
+
+            let y = today.getFullYear() - birthDate.getFullYear();
+            let m = today.getMonth() - birthDate.getMonth();
+            let d = today.getDate() - birthDate.getDate();
+
+            if (d < 0) {
+                m--;
+                const prevMonthLastDay = new Date(today.getFullYear(), today.getMonth(), 0).getDate();
+                d += prevMonthLastDay;
+            }
+            if (m < 0) {
+                y--;
+                m += 12;
+            }
+
+            const diffMs = today - birthDate;
+            const totalD = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+            const totalH = totalD * 24;
+            const totalWeeks = Math.floor(totalD / 7);
+            const totalMinutes = totalH * 60;
+            const totalSeconds = totalMinutes * 60;
+
+            let nextBday = new Date(today.getFullYear(), birthDate.getMonth(), birthDate.getDate());
+            if (nextBday < today) {
+                nextBday.setFullYear(today.getFullYear() + 1);
+            }
+            const nextDays = Math.ceil((nextBday - today) / (1000 * 60 * 60 * 24));
+
+            const lifeExpectancyYears = 80;
+            const ageInYears = y + m/12 + d/365;
+            const lifePercent = Math.min(100, Math.round((ageInYears / lifeExpectancyYears) * 100));
+
+            const birthDayName = days[birthDate.getDay()];
+            const zodiac = getZodiac(birthDate.getMonth() + 1, birthDate.getDate());
+
+            const targetAge = 30;
+            let daysToTarget = null;
+            if (y < targetAge) {
+                const targetDate = new Date(birthDate);
+                targetDate.setFullYear(birthDate.getFullYear() + targetAge);
+                daysToTarget = Math.ceil((targetDate - today) / (1000 * 60 * 60 * 24));
+            } else {
+                daysToTarget = 0;
+            }
+
+            return {
+                years: y,
+                months: m,
+                days: d,
+                totalDays: totalD,
+                totalHours: totalH,
+                totalWeeks: totalWeeks,
+                totalMinutes: totalMinutes,
+                totalSeconds: totalSeconds,
+                nextBirthdayDays: nextDays,
+                birthDayName: birthDayName,
+                zodiac: zodiac,
+                lifePercent: lifePercent,
+                daysToTarget: daysToTarget
+            };
+        }
+
+        function updateUI(result) {
+            document.getElementById('birthExtraInfo').innerHTML = `<span class="px-3 py-1.5 bg-zinc-100 dark:bg-zinc-800 rounded-full">✨ Lahir ${result.birthDayName}</span><span class="px-3 py-1.5 bg-zinc-100 dark:bg-zinc-800 rounded-full">♈ Zodiak ${result.zodiac}</span>`;
+
+            animateNum('resYears', result.years, 800);
+            animateNum('resMonths', result.months, 1000);
+            animateNum('resDays', result.days, 1200);
+            animateNum('totalDays', result.totalDays, 1500);
+            animateNum('totalHours', result.totalHours, 2000);
+            animateNum('totalWeeks', result.totalWeeks, 1800);
+            animateNum('totalMinutes', result.totalMinutes, 2200);
+            animateNum('totalSeconds', result.totalSeconds, 2400);
+            animateNum('nextBirthdayDays', result.nextBirthdayDays, 1000);
+
+            const milestoneEl = document.getElementById('milestoneDays');
+            if (result.daysToTarget !== null && result.daysToTarget > 0) {
+                milestoneEl.innerText = result.daysToTarget.toLocaleString('id-ID');
+                milestoneEl.parentElement.innerHTML = `<span id="milestoneDays" class="text-lg font-bold font-mono">${result.daysToTarget.toLocaleString('id-ID')}</span> hari lagi`;
+            } else {
+                milestoneEl.parentElement.innerHTML = `🎉 Sudah mencapai usia 30 tahun`;
+            }
+
+            document.getElementById('lifePercent').innerText = `${result.lifePercent}%`;
+            document.getElementById('lifeBar').style.width = `${result.lifePercent}%`;
+        }
+
         function hitungUmur() {
             errBox.classList.add('hidden');
             
@@ -204,6 +367,8 @@
                 tampilkanError('Silakan pilih tanggal lahir terlebih dahulu.');
                 return;
             }
+
+            localStorage.setItem('userBirthdate', birthVal);
 
             const bDate = new Date(birthVal + 'T00:00:00');
             const birthYear = bDate.getFullYear();
@@ -220,29 +385,7 @@
                 return;
             }
 
-            let y = today.getFullYear() - bDate.getFullYear();
-            let m = today.getMonth() - bDate.getMonth();
-            let d = today.getDate() - bDate.getDate();
-
-            if (d < 0) {
-                m--;
-                const prevMonthLastDay = new Date(today.getFullYear(), today.getMonth(), 0).getDate();
-                d += prevMonthLastDay;
-            }
-            if (m < 0) {
-                y--;
-                m += 12;
-            }
-
-            const diffMs = today - bDate;
-            const totalD = Math.floor(diffMs / (1000 * 60 * 60 * 24));
-            const totalH = totalD * 24;
-
-            let nextBday = new Date(today.getFullYear(), bDate.getMonth(), bDate.getDate());
-            if (nextBday < today) {
-                nextBday.setFullYear(today.getFullYear() + 1);
-            }
-            const nextDays = Math.ceil((nextBday - today) / (1000 * 60 * 60 * 24));
+            const result = calculateAge(bDate, today);
 
             rightPanel.classList.remove('hidden');
             stateResult.classList.remove('hidden');
@@ -254,12 +397,7 @@
                 el.style.animation = null; 
             });
 
-            animateNum('resYears', y, 800);
-            animateNum('resMonths', m, 1000);
-            animateNum('resDays', d, 1200);
-            animateNum('totalDays', totalD, 1500);
-            animateNum('totalHours', totalH, 2000);
-            animateNum('nextBirthdayDays', nextDays, 1000);
+            updateUI(result);
 
             if (window.innerWidth < 1024) {
                 rightPanel.scrollIntoView({ behavior: 'smooth' });
@@ -269,23 +407,20 @@
         function tampilkanError(pesan) {
             errMsg.innerText = pesan;
             errBox.classList.remove('hidden');
-            
             stateResult.classList.add('hidden');
         }
 
         function animateNum(id, endVal, duration) {
             const el = document.getElementById(id);
+            if (!el) return;
             let start = null;
-            
             const format = (num) => num.toLocaleString('id-ID');
 
             const step = (timestamp) => {
                 if (!start) start = timestamp;
                 const progress = Math.min((timestamp - start) / duration, 1);
-                
                 const ease = 1 - Math.pow(1 - progress, 4);
                 const current = Math.floor(ease * endVal);
-                
                 el.innerText = format(current);
                 
                 if (progress < 1) {
@@ -299,12 +434,17 @@
 
         btnCalc.addEventListener('click', hitungUmur);
         
+        birthInput.addEventListener('change', () => {
+            localStorage.setItem('userBirthdate', birthInput.value);
+        });
+
         birthInput.addEventListener('keypress', (e) => {
             if (e.key === 'Enter') hitungUmur();
         });
 
         btnReset.addEventListener('click', () => {
             birthInput.value = '';
+            localStorage.removeItem('userBirthdate');
             errBox.classList.add('hidden');
             stateResult.classList.add('hidden');
             rightPanel.classList.add('hidden');
@@ -316,8 +456,10 @@
             const d = document.getElementById('resDays').innerText;
             const td = document.getElementById('totalDays').innerText;
             const bday = document.getElementById('nextBirthdayDays').innerText;
+            const week = document.getElementById('totalWeeks').innerText;
+            const extra = document.getElementById('birthExtraInfo').innerText.replace(/✨|♈/g, '').trim();
 
-            const text = `📊 Statistik Usia Saya:\n• Usia: ${y} Thn, ${m} Bln, ${d} Hari\n• Total hari di bumi: ${td} Hari\n• Ulang tahun berikutnya: ${bday} hari lagi!`;
+            const text = `📊 Statistik Usia Saya:\n• Usia: ${y} Thn, ${m} Bln, ${d} Hari\n• Total hari di bumi: ${td} Hari (${week} minggu)\n• Ulang tahun berikutnya: ${bday} hari lagi!\n${extra}`;
 
             navigator.clipboard.writeText(text).then(() => {
                 const toast = document.getElementById('toast');
@@ -328,6 +470,19 @@
                     toast.style.transform = 'translate(-50%, 1rem)';
                 }, 3000);
             }).catch(() => alert('Gagal menyalin teks.'));
+        });
+
+        document.getElementById('btnDownload').addEventListener('click', () => {
+            const element = document.querySelector('#resultState');
+            html2canvas(element, {
+                scale: 1.5,
+                backgroundColor: getComputedStyle(document.documentElement).backgroundColor
+            }).then(canvas => {
+                const link = document.createElement('a');
+                link.download = 'umur-saya.png';
+                link.href = canvas.toDataURL('image/png');
+                link.click();
+            }).catch(() => alert('Gagal mengunduh gambar.'));
         });
     </script>
 </body>
