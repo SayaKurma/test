@@ -95,7 +95,7 @@
             </div>
         </div>
 
-        <div class="w-full lg:w-7/12 bg-zinc-50 dark:bg-zinc-900 p-8 sm:p-12 lg:p-16 xl:p-24 flex flex-col justify-center min-h-screen lg:min-h-full relative overflow-hidden" id="rightPanel">
+        <div class="hidden w-full lg:w-7/12 bg-zinc-50 dark:bg-zinc-900 p-8 sm:p-12 lg:p-16 xl:p-24 flex flex-col justify-center min-h-screen lg:min-h-full relative overflow-hidden" id="rightPanel">
             
             <div id="resultState" class="hidden w-full max-w-2xl mx-auto space-y-12">
                 
@@ -235,6 +235,7 @@
             }
             const nextDays = Math.ceil((nextBday - today) / (1000 * 60 * 60 * 24));
 
+            rightPanel.classList.remove('hidden');
             stateResult.classList.remove('hidden');
             
             const fadeElements = stateResult.querySelectorAll('.fade-in');
@@ -297,6 +298,7 @@
             birthInput.value = '';
             errBox.classList.add('hidden');
             stateResult.classList.add('hidden');
+            rightPanel.classList.add('hidden');
         });
 
         document.getElementById('btnShare').addEventListener('click', () => {
