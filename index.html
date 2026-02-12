@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="id" class="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kalkulator Umur - Minimalis</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'system-ui', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'monospace'],
+                    },
+                    colors: {
+                        brand: {
+                            50: '#eff6ff',
+                            500: '#3b82f6',
+                            600: '#2563eb',
+                            900: '#1e3a8a',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        /* Sembunyikan icon kalender default di beberapa browser agar lebih rapi */
+        input[type="date"]::-webkit-calendar-picker-indicator {
+            cursor: pointer;
+            opacity: 0.6;
+            transition: 0.2s;
+        }
+        input[type="date"]::-webkit-calendar-picker-indicator:hover {
+            opacity: 1;
+        }
+        
+        /* Custom scrollbar */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #d4d4d8; border-radius: 10px; }
+        .dark ::-webkit-scrollbar-thumb { background: #3f3f46; }
+
+        /* Animasi transisi halus */
+        .fade-in { animation: fadeIn 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+        @keyframes fadeIn {
+            0% { opacity: 0; transform: translateY(10px); }
+            100% { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body class="bg-white dark:bg-zinc-950 text-zinc-900 dark:text-zinc-100 font-sans antialiased transition-colors duration-300">
+
+    <div class="flex flex-col lg:flex-row min-h-screen">
+        
+        <!-- ================= PANEL KIRI (INPUT) ================= -->
+        <div class="w-full lg:w-5/12 p-8 sm:p-12 lg:p-16 xl:p-24 flex flex-col justify-between border-r border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 z-10">
+            
+            <!-- Header Kiri -->
+            <div class="flex justify-between items-center mb-12 lg:mb-0">
+                <div class="flex items-center gap-2 font-bold text-xl tracking-tight">
+                    <div class="w-6 h-6 bg-brand-600 rounded-sm transform rotate-45"></div>
+                    <span>TimeCalc.</span>
+                </div>
+                
+                <!-- Toggle Tema -->
+                <button id="themeToggle" class="p-2 rounded-lg text-zinc-500 hover:bg-zinc-100 dark:hover:bg-zinc-900 dark:text-zinc-400 transition-colors focus:outline-none">
+                    <svg id="sunIcon" class="w-5 h-5 hidden dark:block" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
+                    <svg id="moonIcon" class="w-5 h-5 block dark:hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path></svg>
+                </button>
+            </div>
+
+            <!-- Form Area -->
+            <div class="flex-grow flex flex-col justify-center my-12 lg:my-0">
+                <h1 class="text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight leading-[1.1] mb-4">
+                    Ketahui <br>
+                    <span class="text-brand-600 dark:text-brand-500">waktu pasti</span><br>
+                    perjalananmu.
+                </h1>
+                <p class="text-zinc-500 dark:text-zinc-400 mb-10 text-lg">
+                    Masukkan tanggal lahir Anda untuk melihat statistik akurat tentang waktu yang telah Anda lalui.
+                </p>
+
+                <div class="space-y-8">
+                    <!-- Input Date (Minimalist Style) -->
+                    <div class="relative group">
+                        <label for="birthdate" class="block text-sm font-semibold text-zinc-500 uppercase tracking-wider mb-2">Tanggal Kelahiran</label>
+                        <input type="date" id="birthdate" 
+                            class="w-full bg-transparent text-2xl sm:text-3xl font-bold py-2 border-b-2 border-zinc-300 dark:border-zinc-700 focus:border-brand-600 dark:focus:border-brand-500 outline-none transition-colors text-zinc-900 dark:text-white cursor-pointer">
+                    </div>
+
+                    <!-- Error Message -->
+                    <div id="errorBox" class="hidden flex items-center gap-2 text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-900/10 p-4 rounded-lg text-sm font-medium">
+                        <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                        <span id="errorMessage">Pesan error</span>
+                    </div>
+
+                    <!-- Action Buttons -->
+                    <div class="flex gap-4">
+                        <button id="btnCalculate" class="flex-1 bg-zinc-900 hover:bg-brand-600 dark:bg-zinc-100 dark:text-zinc-900 dark:hover:bg-brand-500 text-white font-semibold py-4 px-6 rounded-xl transition-all duration-300 active:scale-[0.98] shadow-sm">
+                            Kalkulasi Sekarang
+                        </button>
+                        <button id="btnReset" class="p-4 rounded-xl border-2 border-zinc-200 dark:border-zinc-800 text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-900 transition-colors" title="Reset">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Footer Kiri -->
+            <div class="text-sm text-zinc-400 dark:text-zinc-600 hidden lg:block">
+                &copy; <span id="year">2024</span> StaticAge. No data is stored on servers.
+            </div>
+        </div>
+
+        <!-- ================= PANEL KANAN (HASIL) ================= -->
+        <div class="w-full lg:w-7/12 bg-zinc-50 dark:bg-zinc-900 p-8 sm:p-12 lg:p-16 xl:p-24 flex flex-col justify-center min-h-screen lg:min-h-full relative overflow-hidden" id="rightPanel">
+            
+            <!-- State Kosong (Sebelum hitung) -->
+            <div id="emptyState" class="text-center w-full max-w-md mx-auto fade-in">
+                <div class="w-24 h-24 mx-auto bg-zinc-200 dark:bg-zinc-800 rounded-full flex items-center justify-center mb-6">
+                    <svg class="w-10 h-10 text-zinc-400 dark:text-zinc-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                </div>
+                <h3 class="text-xl font-bold text-zinc-700 dark:text-zinc-300 mb-2">Menunggu Input</h3>
+                <p class="text-zinc-500 dark:text-zinc-500">Pilih tanggal lahir Anda di panel sebelah kiri untuk melihat rincian usia Anda di sini.</p>
+            </div>
+
+            <!-- State Hasil (Setelah hitung) -->
+            <div id="resultState" class="hidden w-full max-w-2xl mx-auto space-y-12">
+                
+                <!-- Hasil Utama (Big Typography) -->
+                <div class="fade-in" style="animation-delay: 0.1s;">
+                    <h2 class="text-sm font-semibold text-zinc-500 uppercase tracking-widest mb-4">Usia Akurat Anda</h2>
+                    <div class="flex flex-col sm:flex-row sm:items-baseline gap-2 sm:gap-4 font-mono">
+                        <div class="text-6xl sm:text-7xl font-bold tracking-tighter text-zinc-900 dark:text-white">
+                            <span id="resYears">0</span><span class="text-2xl sm:text-3xl font-medium text-zinc-400 ml-1">thn</span>
+                        </div>
+                        <div class="text-4xl sm:text-5xl font-bold tracking-tighter text-zinc-700 dark:text-zinc-300">
+                            <span id="resMonths">0</span><span class="text-xl font-medium text-zinc-400 ml-1">bln</span>
+                        </div>
+                        <div class="text-4xl sm:text-5xl font-bold tracking-tighter text-brand-600 dark:text-brand-500">
+                            <span id="resDays">0</span><span class="text-xl font-medium text-zinc-400 ml-1">hri</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Divider -->
+                <hr class="border-zinc-200 dark:border-zinc-800 fade-in" style="animation-delay: 0.2s;">
+
+                <!-- Grid Statistik Detail -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 fade-in" style="animation-delay: 0.3s;">
+                    
+                    <!-- Card: Total Hari -->
+                    <div class="bg-white dark:bg-zinc-950 p-6 rounded-2xl border border-zinc-100 dark:border-zinc-800 shadow-sm">
+                        <div class="flex items-center gap-3 mb-3 text-zinc-500 dark:text-zinc-400">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                            <h3 class="font-medium text-sm">Total Hari Dijalani</h3>
+                        </div>
+                        <p class="text-3xl font-bold font-mono"><span id="totalDays">0</span></p>
+                    </div>
+
+                    <!-- Card: Total Jam -->
+                    <div class="bg-white dark:bg-zinc-950 p-6 rounded-2xl border border-zinc-100 dark:border-zinc-800 shadow-sm">
+                        <div class="flex items-center gap-3 mb-3 text-zinc-500 dark:text-zinc-400">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                            <h3 class="font-medium text-sm">Total Jam Dijalani</h3>
+                        </div>
+                        <p class="text-3xl font-bold font-mono"><span id="totalHours">0</span></p>
+                    </div>
+
+                    <!-- Card: Ulang Tahun Berikutnya (Full Width) -->
+                    <div class="bg-brand-50 dark:bg-brand-900/10 p-6 rounded-2xl border border-brand-100 dark:border-brand-900/30 sm:col-span-2 relative overflow-hidden group">
+                        <!-- Dekorasi background -->
+                        <div class="absolute -right-6 -top-6 w-32 h-32 bg-brand-100 dark:bg-brand-900/20 rounded-full blur-2xl group-hover:scale-150 transition-transform duration-700"></div>
+                        
+                        <div class="relative z-10 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                            <div>
+                                <div class="flex items-center gap-2 mb-2 text-brand-700 dark:text-brand-400">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 15.546c-.523 0-1.046.151-1.5.454a2.704 2.704 0 01-3 0 2.704 2.704 0 00-3 0 2.704 2.704 0 01-3 0 2.704 2.704 0 00-3 0 2.704 2.704 0 01-3 0 2.701 2.701 0 00-1.5-.454M9 6v2m3-2v2m3-2v2M9 3h.01M12 3h.01M15 3h.01M21 21v-7a2 2 0 00-2-2H5a2 2 0 00-2 2v7h18zm-3-9v-2a2 2 0 00-2-2H8a2 2 0 00-2 2v2h12z"></path></svg>
+                                    <h3 class="font-bold text-sm uppercase tracking-wider">Ulang Tahun Berikutnya</h3>
+                                </div>
+                                <p class="text-2xl font-semibold text-zinc-900 dark:text-white">
+                                    Dalam <span id="nextBirthdayDays" class="text-brand-600 dark:text-brand-400 font-bold text-4xl">0</span> hari
+                                </p>
+                            </div>
+                            
+                            <!-- Tombol Share -->
+                            <button id="btnShare" class="shrink-0 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-700 hover:border-brand-500 hover:text-brand-600 dark:hover:text-brand-400 px-5 py-2.5 rounded-lg text-sm font-medium transition-colors flex items-center gap-2 shadow-sm">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3"></path></svg>
+                                Salin Ringkasan
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Notifikasi Copy (Toast) -->
+            <div id="toast" class="absolute bottom-8 left-1/2 transform -translate-x-1/2 bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-900 px-6 py-3 rounded-lg shadow-xl opacity-0 transition-all duration-300 translate-y-4 pointer-events-none text-sm font-semibold flex items-center gap-2 z-50">
+                <svg class="w-4 h-4 text-green-400 dark:text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                Berhasil disalin ke clipboard!
+            </div>
+
+        </div>
+    </div>
+
+    <!-- ================= JAVASCRIPT LOGIC ================= -->
+    <script>
+        // Set Tahun Footer
+        document.getElementById('year').innerText = new Date().getFullYear();
+
+        // --- 1. Dark Mode Toggle ---
+        const themeToggleBtn = document.getElementById('themeToggle');
+        const html = document.documentElement;
+
+        // Cek preferensi
+        if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            html.classList.add('dark');
+        } else {
+            html.classList.remove('dark');
+        }
+
+        themeToggleBtn.addEventListener('click', () => {
+            html.classList.toggle('dark');
+            localStorage.theme = html.classList.contains('dark') ? 'dark' : 'light';
+        });
+
+        // --- 2. Variabel DOM ---
+        const birthInput = document.getElementById('birthdate');
+        const btnCalc = document.getElementById('btnCalculate');
+        const btnReset = document.getElementById('btnReset');
+        const errBox = document.getElementById('errorBox');
+        const errMsg = document.getElementById('errorMessage');
+        
+        const stateEmpty = document.getElementById('emptyState');
+        const stateResult = document.getElementById('resultState');
+        const rightPanel = document.getElementById('rightPanel');
+
+        // Batasi tanggal maksimum ke hari ini
+        const todayStr = new Date().toISOString().split('T')[0];
+        birthInput.setAttribute('max', todayStr);
+
+        // --- 3. Logika Perhitungan ---
+        function hitungUmur() {
+            errBox.classList.add('hidden'); // Reset error
+            
+            const birthVal = birthInput.value;
+            if (!birthVal) {
+                tampilkanError('Silakan pilih tanggal lahir terlebih dahulu.');
+                return;
+            }
+
+            const bDate = new Date(birthVal);
+            const today = new Date();
+
+            if (bDate > today) {
+                tampilkanError('Tanggal lahir tidak bisa di masa depan.');
+                return;
+            }
+
+            // Hitung Y/M/D
+            let y = today.getFullYear() - bDate.getFullYear();
+            let m = today.getMonth() - bDate.getMonth();
+            let d = today.getDate() - bDate.getDate();
+
+            if (d < 0) {
+                m--;
+                const prevMonth = new Date(today.getFullYear(), today.getMonth(), 0);
+                d += prevMonth.getDate();
+            }
+            if (m < 0) {
+                y--;
+                m += 12;
+            }
+
+            // Hitung Total Waktu (Milidetik)
+            const diffMs = Math.abs(today - bDate);
+            const totalD = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+            const totalH = Math.floor(diffMs / (1000 * 60 * 60));
+
+            // Hitung Ultah Berikutnya
+            let nextBday = new Date(today.getFullYear(), bDate.getMonth(), bDate.getDate());
+            if (today > nextBday && (today.getDate() !== nextBday.getDate() || today.getMonth() !== nextBday.getMonth())) {
+                nextBday.setFullYear(today.getFullYear() + 1);
+            }
+            const nextDays = Math.ceil((nextBday - today) / (1000 * 60 * 60 * 24));
+
+            // --- Tampilkan Hasil ---
+            stateEmpty.classList.add('hidden');
+            
+            // Re-trigger animasi dengan menghapus dan menambahkan class
+            stateResult.classList.remove('hidden');
+            const fadeElements = stateResult.querySelectorAll('.fade-in');
+            fadeElements.forEach(el => {
+                el.style.animation = 'none';
+                el.offsetHeight; /* trigger reflow */
+                el.style.animation = null; 
+            });
+
+            // Animasi Angka
+            animateNum("resYears", y, 800);
+            animateNum("resMonths", m, 1000);
+            animateNum("resDays", d, 1200);
+            animateNum("totalDays", totalD, 1500);
+            animateNum("totalHours", totalH, 2000);
+            animateNum("nextBirthdayDays", nextDays, 1000);
+
+            // Auto-scroll ke panel kanan jika di layar HP
+            if (window.innerWidth < 1024) {
+                rightPanel.scrollIntoView({ behavior: 'smooth' });
+            }
+        }
+
+        // --- 4. Helper Functions ---
+        function tampilkanError(pesan) {
+            errMsg.innerText = pesan;
+            errBox.classList.remove('hidden');
+            
+            // Sembunyikan hasil, kembalikan ke empty state
+            stateResult.classList.add('hidden');
+            stateEmpty.classList.remove('hidden');
+        }
+
+        // Fungsi Animasi Counter Angka
+        function animateNum(id, endVal, duration) {
+            const el = document.getElementById(id);
+            let start = null;
+            
+            // Format pakai titik pemisah ribuan
+            const format = (num) => num.toLocaleString('id-ID');
+
+            const step = (timestamp) => {
+                if (!start) start = timestamp;
+                const progress = Math.min((timestamp - start) / duration, 1);
+                
+                // Ease out quart
+                const ease = 1 - Math.pow(1 - progress, 4);
+                const current = Math.floor(ease * endVal);
+                
+                el.innerText = format(current);
+                
+                if (progress < 1) {
+                    window.requestAnimationFrame(step);
+                } else {
+                    el.innerText = format(endVal);
+                }
+            };
+            window.requestAnimationFrame(step);
+        }
+
+        // --- 5. Event Listeners ---
+        btnCalc.addEventListener('click', hitungUmur);
+        
+        // Tekan Enter di input otomatis hitung
+        birthInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') hitungUmur();
+        });
+
+        // Reset
+        btnReset.addEventListener('click', () => {
+            birthInput.value = '';
+            errBox.classList.add('hidden');
+            stateResult.classList.add('hidden');
+            stateEmpty.classList.remove('hidden');
+        });
+
+        // Copy Text
+        document.getElementById('btnShare').addEventListener('click', () => {
+            const y = document.getElementById('resYears').innerText;
+            const m = document.getElementById('resMonths').innerText;
+            const d = document.getElementById('resDays').innerText;
+            const td = document.getElementById('totalDays').innerText;
+            const bday = document.getElementById('nextBirthdayDays').innerText;
+
+            const text = `📊 Statistik Usia Saya:\n• Usia: ${y} Thn, ${m} Bln, ${d} Hari\n• Total hari di bumi: ${td} Hari\n• Ulang tahun berikutnya: ${bday} hari lagi!`;
+
+            navigator.clipboard.writeText(text).then(() => {
+                const toast = document.getElementById('toast');
+                toast.style.opacity = '1';
+                toast.style.transform = 'translate(-50%, 0)';
+                setTimeout(() => {
+                    toast.style.opacity = '0';
+                    toast.style.transform = 'translate(-50%, 1rem)';
+                }, 3000);
+            }).catch(() => alert('Gagal menyalin teks.'));
+        });
+
+    </script>
+</body>
+</html>
