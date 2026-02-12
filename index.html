@@ -193,6 +193,8 @@
 
         const todayStr = new Date().toISOString().split('T')[0];
         birthInput.setAttribute('max', todayStr);
+        const currentYear = new Date().getFullYear();
+        birthInput.setAttribute('min', `${currentYear-150}-01-01`);
 
         function hitungUmur() {
             errBox.classList.add('hidden');
@@ -203,8 +205,15 @@
                 return;
             }
 
-            const bDate = new Date(birthVal);
+            const bDate = new Date(birthVal + 'T00:00:00');
+            const birthYear = bDate.getFullYear();
+            if (birthYear < currentYear - 150 || birthYear > currentYear) {
+                tampilkanError(`Tanggal lahir harus antara ${currentYear-150} dan ${currentYear}.`);
+                return;
+            }
+
             const today = new Date();
+            today.setHours(0, 0, 0, 0);
 
             if (bDate > today) {
                 tampilkanError('Tanggal lahir tidak bisa di masa depan.');
@@ -217,20 +226,20 @@
 
             if (d < 0) {
                 m--;
-                const prevMonth = new Date(today.getFullYear(), today.getMonth(), 0);
-                d += prevMonth.getDate();
+                const prevMonthLastDay = new Date(today.getFullYear(), today.getMonth(), 0).getDate();
+                d += prevMonthLastDay;
             }
             if (m < 0) {
                 y--;
                 m += 12;
             }
 
-            const diffMs = Math.abs(today - bDate);
+            const diffMs = today - bDate;
             const totalD = Math.floor(diffMs / (1000 * 60 * 60 * 24));
-            const totalH = Math.floor(diffMs / (1000 * 60 * 60));
+            const totalH = totalD * 24;
 
             let nextBday = new Date(today.getFullYear(), bDate.getMonth(), bDate.getDate());
-            if (today > nextBday && (today.getDate() !== nextBday.getDate() || today.getMonth() !== nextBday.getMonth())) {
+            if (nextBday < today) {
                 nextBday.setFullYear(today.getFullYear() + 1);
             }
             const nextDays = Math.ceil((nextBday - today) / (1000 * 60 * 60 * 24));
@@ -245,12 +254,12 @@
                 el.style.animation = null; 
             });
 
-            animateNum("resYears", y, 800);
-            animateNum("resMonths", m, 1000);
-            animateNum("resDays", d, 1200);
-            animateNum("totalDays", totalD, 1500);
-            animateNum("totalHours", totalH, 2000);
-            animateNum("nextBirthdayDays", nextDays, 1000);
+            animateNum('resYears', y, 800);
+            animateNum('resMonths', m, 1000);
+            animateNum('resDays', d, 1200);
+            animateNum('totalDays', totalD, 1500);
+            animateNum('totalHours', totalH, 2000);
+            animateNum('nextBirthdayDays', nextDays, 1000);
 
             if (window.innerWidth < 1024) {
                 rightPanel.scrollIntoView({ behavior: 'smooth' });
@@ -320,7 +329,6 @@
                 }, 3000);
             }).catch(() => alert('Gagal menyalin teks.'));
         });
-
     </script>
 </body>
 </html>
